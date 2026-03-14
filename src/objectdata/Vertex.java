@@ -3,15 +3,19 @@ package objectdata;
 import model.Vectorizable;
 import transforms.Col;
 import transforms.Point3D;
+import transforms.Vec2D;
 
 public class Vertex implements Vectorizable<Vertex>{
     private final Point3D position;
     private final Col color;
+    private final Vec2D uv;
     //todo normal uv one
-    public Vertex(Point3D position, Col color) {
+    public Vertex(Point3D position, Col color, Vec2D uv) {
         this.position = position;
         this.color = color;
+        this.uv = uv;
     }
+    
     public Point3D getPosition() {
         return position;
     }
@@ -29,12 +33,16 @@ public class Vertex implements Vectorizable<Vertex>{
     }
     @Override
     public Vertex mul(double d) {
-        return new Vertex(this.position.mul(d), this.color.mul(d));
+        return new Vertex(this.position.mul(d), this.color.mul(d), this.uv.mul(d));
     }
 
     @Override
     public Vertex add(Vertex v) {
-        return new Vertex(this.position.add(v.getPosition()), this.color.add(v.getColor()));
+        return new Vertex(this.position.add(v.getPosition()), this.color.add(v.getColor()), this.uv.add(v.getUv()));
+    }
+
+    public Vec2D getUv() {
+        return uv;
     }
 
 }

@@ -2,6 +2,7 @@ package rasterize;
 
 import objectdata.Vertex;
 import raster.ZBuffer;
+import shader.shader;
 import util.Lerp;
 
 public class TriangleRasterizer {
@@ -12,7 +13,7 @@ public class TriangleRasterizer {
         this.img = zbuffer;
     }
 
-    public void rasterize(Vertex a, Vertex b, Vertex c){
+    public void rasterize(Vertex a, Vertex b, Vertex c, shader shader){
         //todo sort vertices by y   
         Vertex temp;
         if (a.getY() > b.getY()) {
@@ -50,12 +51,13 @@ public class TriangleRasterizer {
                 ac = tempx;
             }
 
+            //orezani
+            //if a.getz()<zMin(0)
+
             for (int x = (int) Math.round(ab.getX()); x <= (int) Math.round(ac.getX()); x++) {
                 double t = (x - ab.getX()) / (ac.getX() - ab.getX());
                 Vertex pixel = lerp.lerp(ab, ac, t);
-                System.out.println(x+","+y);
-                img.setPixelWithZTest(x, y, pixel.getZ(), pixel.getColor());
-
+                img.setPixelWithZTest(x, y, pixel.getZ(), shader.shade(pixel));
             }
         }
        for(int y = bY; y <=cY; y++){
@@ -74,8 +76,7 @@ public class TriangleRasterizer {
             for (int x = (int) Math.round(bc.getX()); x <= (int) Math.round(ac.getX()); x++) {
                 double t = (x - bc.getX()) / (ac.getX() - bc.getX());
                 Vertex pixel = lerp.lerp(bc, ac, t);
-                System.out.println(x+",penis,"+y);
-                img.setPixelWithZTest(x, y, pixel.getZ(), pixel.getColor());
+                img.setPixelWithZTest(x, y, pixel.getZ(), shader.shade(pixel));
 
             }
         }

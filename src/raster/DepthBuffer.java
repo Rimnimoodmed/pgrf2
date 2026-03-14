@@ -49,9 +49,6 @@ public class DepthBuffer implements Raster<Double>{
     @Override
     public void setValue(int x, int y, Double value) {
         // TODO Auto-generated method stub
-        System.out.println(x);
-        System.out.println(y);
-        System.out.println(value);
         if (getValue(x, y).orElse(1.0)>value) {
             buffer[x][y] = value;
         }
