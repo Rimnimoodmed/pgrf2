@@ -5,6 +5,7 @@ import java.util.List;
 
 import objectdata.Solid;
 import transforms.Camera;
+import transforms.Col;
 import transforms.Mat4;
 import transforms.Mat4OrthoRH;
 import transforms.Mat4PerspRH;
@@ -17,6 +18,7 @@ public class Scene {
     private Mat4 projectionPersp;
     private Mat4 projectionOrtho;
     private Mat4 projection;
+    private Col ambientColor = new Col(128,128,255);
     public Scene(Panel panel) {
         view = new Camera((new Vec3D(0, 0, 0)), 0,0, 5, true);
         projectionPersp = new Mat4PerspRH(Math.PI/2, (double) panel.getHeight() /panel.getWidth(),0.1,10000);
@@ -50,4 +52,11 @@ public class Scene {
     public void setProjection(Mat4 projection) {
         this.projection = projection;
     }
+    public Col getAmbientColor() {
+        return ambientColor;
+    }
+    public void setAmbientColor(Col ambientColor) {
+        this.ambientColor = ambientColor;
+    }
+    
 }

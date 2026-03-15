@@ -3,7 +3,7 @@ package shader;
 import objectdata.Vertex;
 import transforms.Col;
 
-public class shaderInterpolated implements Shader{
+public class ShaderInterpolated implements Shader{
 
     @Override
     public Col shade(Vertex pixel) {

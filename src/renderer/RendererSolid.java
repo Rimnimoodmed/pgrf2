@@ -133,7 +133,7 @@ public class RendererSolid {
         transformujDoOkna(c);
 
         // Rasterizace
-        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());
+        triangleRasterizer.rasterize(a, b, c, shader);
         }
     }
     public Vertex transformujDoOkna(Vertex v){

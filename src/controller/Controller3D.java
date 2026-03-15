@@ -23,7 +23,7 @@ import rasterize.TriangleRasterizer;
 import renderer.RendererSolid;
 import shader.Shader;
 import shader.ShaderConstant;
-import shader.shaderInterpolated;
+import shader.ShaderInterpolated;
 import transforms.*;
 import view.Panel;
 
@@ -38,6 +38,7 @@ public class Controller3D {
 
     private BufferedImage grayConcrete;
     private Shader concShader;
+    private Shader constShader;
 
     private Solid selected;
     private Solid Arrow;
@@ -47,6 +48,7 @@ public class Controller3D {
 
     private ArrayList<Solid> solids = new ArrayList<>();
     private int solidPointer = 0;
+    private boolean ortho = false;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -55,9 +57,10 @@ public class Controller3D {
         triangleRasterizer = new TriangleRasterizer(zBuffer);
         renderer = new RendererSolid(lineRasterizer, triangleRasterizer, panel);
         scene = new Scene(panel);
+        constShader = new ShaderConstant();
         
         try {
-            grayConcrete = ImageIO.read(new File("res/textury/premium_photo-1742642385948-78abcce5656b.jpeg"));
+            grayConcrete = ImageIO.read(new File("pgrf2.task1.benes/res/textury/premium_photo-1742642385948-78abcce5656b.jpeg"));
         } catch (Exception e) {
             System.out.println("a");
         }
@@ -78,14 +81,23 @@ public class Controller3D {
                     if (ortho) {
                         ortho=false;
                         System.out.println("neorthuju");
-                        projection = projectionOrtho;
+                        scene.setProjection(scene.getProjectionOrtho());
                     }
                     else{
                         ortho= true;
                         System.out.println("orthuju");
-                        projection = projectionPersp;
+                        scene.setProjection(scene.getProjectionPersp());
                     }
                 }*/
+                if (e.getKeyCode() == KeyEvent.VK_X) {
+                    System.out.println(solids.get(solidPointer).getShader().equals(coShader));
+                    if (solids.get(solidPointer).getShader().equals(coShader)) {
+                        solids.get(solidPointer).setShader(constShader);
+                    }
+                    else{
+                        solids.get(solidPointer).setShader(coShader);
+                    }
+                }
                 if (e.getKeyCode() == KeyEvent.VK_W) {
                     scene.setView(scene.getView().forward(pohyb));
                 }
@@ -188,18 +200,7 @@ public class Controller3D {
             }
         });
     }
-    public void initObjects() {
-        cube = new Cube();
-        cube.setModel(cube.getModel().mul(new Mat4Transl(5,0,0)));
-        solids.add(cube);
-        Quad = new objectdata.Quad();
-        //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
-        Quad.setModel(Quad.getModel().mul(new Mat4Transl(5,1,0)));
-        //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
-        Quad.setShader(new ShaderConstant());
-        solids.add(Quad);
-        selected = solids.get(solidPointer);
-    }
+    
     Shader coShader = new Shader() {
         @Override
         public Col shade(Vertex pixel){
@@ -217,9 +218,22 @@ public class Controller3D {
             if (y<0) {
                 y=0;
             }
-            return new Col(grayConcrete.getRGB((int)(x*(grayConcrete.getWidth()-1)),(int)(y*(grayConcrete.getHeight()-1))));
+            return new Col(grayConcrete.getRGB((int)(x*(grayConcrete.getWidth()-1)),(int)(y*(grayConcrete.getHeight()-1)))).mul(scene.getAmbientColor());
         }
     };
+    public void initObjects() {
+        cube = new Cube();
+        cube.setModel(cube.getModel().mul(new Mat4Transl(5,0,0)));
+        cube.setShader(coShader);
+        solids.add(cube);
+        Quad = new objectdata.Quad();
+        //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
+        Quad.setModel(Quad.getModel().mul(new Mat4Transl(5,1,0)));
+        //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
+        Quad.setShader(coShader);
+        solids.add(Quad);
+        selected = solids.get(solidPointer);
+    }
     private void drawScene() {
         zBuffer.clear();
         panel.getRaster().clear();
