@@ -3,7 +3,7 @@ package shader;
 import objectdata.Vertex;
 import transforms.Col;
 
-public interface shader {
+public interface Shader {
     Col shade(Vertex pixel);
 
 }

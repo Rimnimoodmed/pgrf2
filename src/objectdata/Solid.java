@@ -2,8 +2,10 @@ package objectdata;
 
 import objectdata.Part;
 import objectdata.Vertex;
-import shader.shader;
-import shader.shaderConstant;
+import shader.Shader;
+import shader.ShaderConstant;
+import transforms.Mat4;
+import transforms.Mat4Identity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,9 +15,9 @@ public abstract class Solid {
     protected final List<Vertex> vertexBuffer = new ArrayList<>();
     protected final List<Integer> indexBuffer = new ArrayList<>();
     protected final List<Part> partBuffer = new ArrayList<>();
-    protected shader shader = new shaderConstant();
+    protected Shader shader = new ShaderConstant();
 
-    
+    protected Mat4 model = new Mat4Identity();
 
     public List<Vertex> getVertexBuffer() {
         return vertexBuffer;
@@ -33,11 +35,20 @@ public abstract class Solid {
         indexBuffer.addAll(Arrays.asList(indices));
     }
 
-    public shader getShader() {
+    public Shader getShader() {
         return shader;
     }
 
-    public void setShader(shader shader) {
+    public void setShader(Shader shader) {
         this.shader = shader;
     }
+
+    public Mat4 getModel() {
+        return model;
+    }
+
+    public void setModel(Mat4 model) {
+        this.model = model;
+    }
+    
 }

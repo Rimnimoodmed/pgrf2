@@ -2,6 +2,7 @@ package objectdata;
 
 import model.Vectorizable;
 import transforms.Col;
+import transforms.Mat4;
 import transforms.Point3D;
 import transforms.Vec2D;
 
@@ -44,5 +45,7 @@ public class Vertex implements Vectorizable<Vertex>{
     public Vec2D getUv() {
         return uv;
     }
-
+    public Vertex mul(Mat4 mat) {
+        return new Vertex(this.position.mul(mat), this.color,this.uv);
+    }
 }

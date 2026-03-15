@@ -2,7 +2,7 @@ package rasterize;
 
 import objectdata.Vertex;
 import raster.ZBuffer;
-import shader.shader;
+import shader.Shader;
 import util.Lerp;
 
 public class TriangleRasterizer {
@@ -13,8 +13,7 @@ public class TriangleRasterizer {
         this.img = zbuffer;
     }
 
-    public void rasterize(Vertex a, Vertex b, Vertex c, shader shader){
-        //todo sort vertices by y   
+    public void rasterize(Vertex a, Vertex b, Vertex c, Shader shader){
         Vertex temp;
         if (a.getY() > b.getY()) {
             temp = a;

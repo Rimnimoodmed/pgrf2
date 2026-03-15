@@ -1,22 +1,20 @@
 package controller;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import model.Scene;
 import objectdata.Arrow;
 import objectdata.Solid;
 import objectdata.Vertex;
-import raster.RasterBufferedImage;
 import raster.ZBuffer;
 import rasterize.LineRasterizer;
 import rasterize.LineRasterizerGraphics;
 import rasterize.TriangleRasterizer;
 import renderer.RendererSolid;
-import shader.shader;
-import shader.shaderConstant;
+import shader.Shader;
 import transforms.*;
 import view.Panel;
 
@@ -27,12 +25,13 @@ public class Controller3D {
     private LineRasterizer lineRasterizer;
     private TriangleRasterizer triangleRasterizer;
     private RendererSolid renderer;
-
+    private Scene scene;
 
     private BufferedImage grayConcrete;
-    private shader concShader;
+    private Shader concShader;
 
     private Solid Arrow;
+    private Solid Quad;
 
 
     public Controller3D(Panel panel) {
@@ -40,6 +39,8 @@ public class Controller3D {
         this.zBuffer = new ZBuffer(panel.getRaster());
         lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
         triangleRasterizer = new TriangleRasterizer(zBuffer);
+        renderer = new RendererSolid(lineRasterizer, triangleRasterizer);
+        scene = new Scene(panel);
         
         try {
             grayConcrete = ImageIO.read(new File("res/textury/premium_photo-1742642385948-78abcce5656b.jpeg"));
@@ -47,6 +48,7 @@ public class Controller3D {
             System.out.println("a");
         }
         Arrow = new Arrow();
+        Quad = new objectdata.Quad();
 
         initListeners();
 
@@ -56,7 +58,10 @@ public class Controller3D {
     private void initListeners() {
         // TODO: Inicializace listenerů např. pohyb kamerou
     }
-    shader coShader = new shader() {
+    public void initObjects() {
+
+    }
+    Shader coShader = new Shader() {
         @Override
         public Col shade(Vertex pixel){
             double x = pixel.getUv().getX();
@@ -82,13 +87,14 @@ public class Controller3D {
         zBuffer.setPixelWithZTest(50, 50, 0.1, new Col(0x00ff00));
         zBuffer.setPixelWithZTest(50, 50, 0.4, new Col(0xff00ff));
         
-        Vertex a = new Vertex(new Point3D(400, 0, 1), new Col(1.,0,0), new Vec2D(1,0));
+        Vertex a = new Vertex(new Point3D(400, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
         Vertex b = new Vertex(new Point3D(0, 300, 1) , new Col(0.,1,0), new Vec2D(0,0));
-        Vertex c = new Vertex(new Point3D(599, 599, 0), new Col(1.,0,0), new Vec2D(1,1));
+        Vertex c = new Vertex(new Point3D(599, 599, 1), new Col(1.,0,0), new Vec2D(1,1));
         
-        triangleRasterizer.rasterize(a, b, c, coShader);
+        //triangleRasterizer.rasterize(a, b, c, coShader);
         
-        renderer.render(arrow);
+        //renderer.render(Arrow);
+        renderer.render(Quad, scene);
 
         /*Vertex d = new Vertex(new Point3D(200, 0, 0), new Col(0.,1,0));
         Vertex e = new Vertex(new Point3D(0, 100, 0) , new Col(0.,1.,0));
