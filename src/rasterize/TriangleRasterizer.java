@@ -49,10 +49,7 @@ public class TriangleRasterizer {
                 ab = ac;
                 ac = tempx;
             }
-
-            //orezani
-            //if a.getz()<zMin(0)
-
+            
             for (int x = (int) Math.round(ab.getX()); x <= (int) Math.round(ac.getX()); x++) {
                 double t = (x - ab.getX()) / (ac.getX() - ab.getX());
                 Vertex pixel = lerp.lerp(ab, ac, t);
@@ -75,8 +72,10 @@ public class TriangleRasterizer {
             for (int x = (int) Math.round(bc.getX()); x <= (int) Math.round(ac.getX()); x++) {
                 double t = (x - bc.getX()) / (ac.getX() - bc.getX());
                 Vertex pixel = lerp.lerp(bc, ac, t);
+                /*System.out.println(pixel.getPosition());
+                System.out.println(t);
+                System.out.println(ac.getX() - bc.getX());*/
                 img.setPixelWithZTest(x, y, pixel.getZ(), shader.shade(pixel));
-
             }
         }
 

@@ -33,6 +33,9 @@ public class Vertex implements Vectorizable<Vertex>{
     public double getZ(){
         return position.getZ();
     }
+    public double getW(){
+        return position.getW();
+    }
     @Override
     public Vertex mul(double d) {
         return new Vertex(this.position.mul(d), this.color.mul(d), this.uv.mul(d));

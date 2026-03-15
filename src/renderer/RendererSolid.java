@@ -26,7 +26,7 @@ public class RendererSolid {
     }
     
     public void render(Solid solid, Scene scene) {
-        Mat4 mvp = solid.getModel().mul(scene.getView().getViewMatrix()).mul(scene.getProjection());
+        Mat4 mvp = solid.getModel().mul(scene.getView().getViewMatrix()).mul(scene.getProjectionPersp());
         for (Part part : solid.getPartBuffer()) {
             switch (part.getType()) {
                 case LINES:
@@ -55,18 +55,32 @@ public class RendererSolid {
                     }
                 break;
                 case TRIANGLES:
+                    
                     index = part.getStartIndex();
                     for (int i = 0; i < part.getCount(); i++) {
                         int indexA = solid.getIndexBuffer().get(index++);
                         int indexB = solid.getIndexBuffer().get(index++);
                         int indexC = solid.getIndexBuffer().get(index++);
-
+                        
                         Vertex a = solid.getVertexBuffer().get(indexA).mul(mvp);
                         Vertex b = solid.getVertexBuffer().get(indexB).mul(mvp);
                         Vertex c = solid.getVertexBuffer().get(indexC).mul(mvp);
+                        System.out.println(solid.getVertexBuffer().get(indexA).getPosition()+"1");
+                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).getPosition()+"2");
+                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).mul(scene.getView().getViewMatrix()).getPosition()+"3");
+                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).mul(scene.getView().getViewMatrix()).mul(scene.getProjection()).getPosition()+"3");
+                        System.out.println(a.getPosition()+"4a");
+                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition()+"1");
+                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition().mul(solid.getModel())+"2");
+                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition().mul(solid.getModel()).mul(scene.getView().getViewMatrix())+"3");
 
+                        System.out.println(b.getPosition()+"4b");
+                        System.out.println(c.getPosition());
                         // TODO: transformace MVP
-
+                        System.out.println(inView(a));
+                        System.out.println(inView(b));
+                        System.out.println(inView(c));
+                        //if (inView(a)&&inView(b)&&inView(c)) {
                         double zMin = 0;
 
                         Vertex temp;
@@ -120,6 +134,7 @@ public class RendererSolid {
                     }
 
                 break;
+                    
             }
         }
     }
@@ -140,6 +155,14 @@ public class RendererSolid {
         v.setPosition(new Point3D(new Vec3D(v.getPosition()).add(new Vec3D(1,1,0))));
         v.setPosition(new Point3D(new Vec3D(v.getPosition()).mul(new Vec3D((double) (panel.getWidth() - 1) /2, (double) (panel.getHeight() - 1) /2,1))));
         return v;
+    }
+    public boolean inView(Vertex v){
+        double x = v.getX();
+        double y = v.getY();
+        double z = v.getZ();
+        double w = v.getW();
+
+        return (-w<=x&&x<=w&&-w<=y&&y<=w&&0<=z&&z<=w);
     }
 
 }

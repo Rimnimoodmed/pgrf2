@@ -16,6 +16,9 @@ public class ZBuffer {
 
     public void setPixelWithZTest(int x, int y, double z, Col color){
         if (x<0 || y<0 || z<0 || x>colorBuffer.getWidth() || y>colorBuffer.getHeight()) {
+            System.out.println(x+"x");
+            System.out.println(y+"y");
+            System.out.println(z+"z");
             return;
         }
         else if ((depthBuffer.getValue(x, y).orElse(1.0))>z) {

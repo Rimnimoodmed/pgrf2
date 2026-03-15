@@ -58,9 +58,10 @@ public class Controller3D {
         }
         Arrow = new Arrow();
         Quad = new objectdata.Quad();
-        Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
-        Quad.setModel(Quad.getModel().mul(new Mat4Transl(1,0,0)));
-        Quad.setModel(Quad.getModel().mul(new Mat4Scale(100)));
+        //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
+        Quad.setModel(Quad.getModel().mul(new Mat4Transl(5,0,0)));
+        //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
+        Quad.setShader(new ShaderConstant());
         Icosahedron = new Icosahedron();
 
         initListenery(panel);
@@ -156,6 +157,7 @@ public class Controller3D {
                         meshPointer = 0;
                     }
                     selected = meshes.get(meshPointer);
+        d
                     selected.setSelected(true);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_G) {
@@ -211,22 +213,25 @@ public class Controller3D {
         }
     };
     private void drawScene() {
+        zBuffer.clear();
         panel.getRaster().clear();
 
         /*zBuffer.setPixelWithZTest(50, 50, 0.1, new Col(0x00ff00));
         zBuffer.setPixelWithZTest(50, 50, 0.4, new Col(0xff00ff));*/
         
-        Vertex a = new Vertex(new Point3D(1, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
+        /*Vertex a = new Vertex(new Point3D(1, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
         Vertex b = new Vertex(new Point3D(0, 1, 1) , new Col(0.,1,0), new Vec2D(0,0));
         Vertex c = new Vertex(new Point3D(1, 1, 1), new Col(1.,0,0), new Vec2D(1,1));
         
-        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());
+        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());*/
         
         //renderer.render(Arrow, scene);
         System.out.println("pozice");
         System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel())).add(scene.getView().getPosition().opposite()));
         System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix()))));
         System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix().mul(scene.getProjection())))));
+        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition()));
+        System.out.println(new Vec3D(scene.getView().getAzimuth()));
         renderer.render(Quad, scene);
         //renderer.render(Icosahedron, scene);
 
@@ -236,7 +241,7 @@ public class Controller3D {
         triangleRasterizer.rasterize(d, e, f, new shaderConstant());*/
 
         panel.repaint();
-        zBuffer.clear();
         
+
     }
 }

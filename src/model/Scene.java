@@ -18,9 +18,9 @@ public class Scene {
     private Mat4 projectionOrtho;
     private Mat4 projection;
     public Scene(Panel panel) {
-        view = new Camera((new Vec3D(-5, 0, 0)), 0,0, 1, true);
-        projectionPersp = new Mat4PerspRH(Math.toRadians(60),panel.getHeight()/panel.getWidth(),0.1,5000);
-        projectionOrtho = new Mat4OrthoRH(10,10,0.1,5000);
+        view = new Camera((new Vec3D(0, 0, 0)), 0,0, 5, true);
+        projectionPersp = new Mat4PerspRH(Math.PI/2, (double) panel.getHeight() /panel.getWidth(),0.1,10000);
+        projectionOrtho = new Mat4OrthoRH(80,60,0.1,5000);
         projection = projectionPersp;
     }
     public List<Solid> getSolidBuffer() {
@@ -50,7 +50,4 @@ public class Scene {
     public void setProjection(Mat4 projection) {
         this.projection = projection;
     }
-
-    
-
 }
