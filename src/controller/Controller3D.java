@@ -6,11 +6,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import model.Scene;
 import objectdata.Arrow;
+import objectdata.Cube;
 import objectdata.Icosahedron;
 import objectdata.Solid;
 import objectdata.Vertex;
@@ -37,11 +39,14 @@ public class Controller3D {
     private BufferedImage grayConcrete;
     private Shader concShader;
 
+    private Solid selected;
     private Solid Arrow;
     private Solid Quad;
-    private Solid Icosahedron;
+    private Solid cube;
     private double pohyb = 0.1;
 
+    private ArrayList<Solid> solids = new ArrayList<>();
+    private int solidPointer = 0;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -57,13 +62,9 @@ public class Controller3D {
             System.out.println("a");
         }
         Arrow = new Arrow();
-        Quad = new objectdata.Quad();
-        //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
-        Quad.setModel(Quad.getModel().mul(new Mat4Transl(5,0,0)));
-        //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
-        Quad.setShader(new ShaderConstant());
-        Icosahedron = new Icosahedron();
-
+        
+       
+        initObjects();
         initListenery(panel);
 
         drawScene();
@@ -91,7 +92,7 @@ public class Controller3D {
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     scene.setView(scene.getView().left(pohyb));
                 }
-                if (e.getKeyCode() == KeyEvent.VK_S) {
+                if (e.getKeyCode() == KeyEvent.VK_S) { 
                     scene.setView(scene.getView().backward(pohyb));
                 }
                 if (e.getKeyCode() == KeyEvent.VK_D) {
@@ -103,7 +104,7 @@ public class Controller3D {
                 if (e.getKeyCode() == KeyEvent.VK_E) {
                     scene.setView(scene.getView().addAzimuth(-pohyb));
                 }
-                /*if (e.getKeyCode() == KeyEvent.VK_I) {
+                if (e.getKeyCode() == KeyEvent.VK_I) {
                     selected.setModel(selected.getModel().mul(new Mat4Transl(0.1,0,0)));
                 }
                 if (e.getKeyCode() == KeyEvent.VK_J) {
@@ -129,38 +130,37 @@ public class Controller3D {
                 }
                 if (e.getKeyCode() == KeyEvent.VK_H) {
                     selected.setModel(new Mat4Scale(0.9).mul(selected.getModel()));
-                }*/
+                }
                 if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     scene.setView(scene.getView().up(pohyb));
                 }
                 if (e.getKeyCode() == 17) {
                     scene.setView(scene.getView().down(pohyb));
                 }
-                /*if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    meshPointer--;
-                    for (Mesh mesh : meshes) {
-                        mesh.setSelected(false);
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    solidPointer--;
+                    for (Solid solid : solids) {
+                        solid.setSelected(false);
                     }
-                    if (meshPointer < 0) {
-                        meshPointer = meshes.size()-1;
+                    if (solidPointer < 0) {
+                        solidPointer = solids.size()-1;
                     }
-                    selected = meshes.get(meshPointer);
+                    selected = solids.get(solidPointer);
                     selected.setSelected(true);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    meshPointer++;
-                    for (Mesh mesh : meshes) {
-                        mesh.setSelected(false);
+                    solidPointer++;
+                    for (Solid solid : solids) {
+                        solid.setSelected(false);
                     }
                     
-                    if (meshPointer > meshes.size()-1) {
-                        meshPointer = 0;
+                    if (solidPointer > solids.size()-1) {
+                        solidPointer = 0;
                     }
-                    selected = meshes.get(meshPointer);
-        d
+                    selected = solids.get(solidPointer);
                     selected.setSelected(true);
                 }
-                if (e.getKeyCode() == KeyEvent.VK_G) {
+                /*if (e.getKeyCode() == KeyEvent.VK_G) {
                     if (selected.isVisible()) {
                         selected.setVisible(false);
                     }
@@ -174,7 +174,6 @@ public class Controller3D {
                     meshes.remove(meshPointer);
                 }*/
                 drawScene();
-                System.out.println(scene.getView().getPosition());
             }
         });
         panel.addMouseMotionListener(new MouseAdapter() {
@@ -183,14 +182,23 @@ public class Controller3D {
                 double x = ((double)e.getX()-(panel.getWidth()/2))/(panel.getWidth()/2)*Math.PI;
                 double y = ((double)e.getY()-(panel.getHeight()/2))/(panel.getHeight()/2)*Math.PI;
                 scene.setView(scene.getView().withAzimuth((double)x));
-                scene.setView(scene.getView().withAzimuth((double)y));
+                scene.setView(scene.getView().withZenith((double)y));
                 drawScene();
                 System.out.println(scene.getView().getAzimuth());
             }
         });
     }
     public void initObjects() {
-
+        cube = new Cube();
+        cube.setModel(cube.getModel().mul(new Mat4Transl(5,0,0)));
+        solids.add(cube);
+        Quad = new objectdata.Quad();
+        //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
+        Quad.setModel(Quad.getModel().mul(new Mat4Transl(5,1,0)));
+        //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
+        Quad.setShader(new ShaderConstant());
+        solids.add(Quad);
+        selected = solids.get(solidPointer);
     }
     Shader coShader = new Shader() {
         @Override
@@ -226,13 +234,8 @@ public class Controller3D {
         triangleRasterizer.rasterize(a, b, c, new ShaderConstant());*/
         
         //renderer.render(Arrow, scene);
-        System.out.println("pozice");
-        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel())).add(scene.getView().getPosition().opposite()));
-        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix()))));
-        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix().mul(scene.getProjection())))));
-        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition()));
-        System.out.println(new Vec3D(scene.getView().getAzimuth()));
         renderer.render(Quad, scene);
+        renderer.render(cube, scene);
         //renderer.render(Icosahedron, scene);
 
         /*Vertex d = new Vertex(new Point3D(200, 0, 0), new Col(0.,1,0));

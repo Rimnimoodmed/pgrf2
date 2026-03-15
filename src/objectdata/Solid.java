@@ -1,7 +1,5 @@
 package objectdata;
 
-import objectdata.Part;
-import objectdata.Vertex;
 import shader.Shader;
 import shader.ShaderConstant;
 import transforms.Mat4;
@@ -18,6 +16,8 @@ public abstract class Solid {
     protected Shader shader = new ShaderConstant();
 
     protected Mat4 model = new Mat4Identity();
+
+    private boolean isSelected = false;
 
     public List<Vertex> getVertexBuffer() {
         return vertexBuffer;
@@ -49,6 +49,14 @@ public abstract class Solid {
 
     public void setModel(Mat4 model) {
         this.model = model;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
     
 }

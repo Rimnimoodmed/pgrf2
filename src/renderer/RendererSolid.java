@@ -65,23 +65,7 @@ public class RendererSolid {
                         Vertex a = solid.getVertexBuffer().get(indexA).mul(mvp);
                         Vertex b = solid.getVertexBuffer().get(indexB).mul(mvp);
                         Vertex c = solid.getVertexBuffer().get(indexC).mul(mvp);
-                        System.out.println(solid.getVertexBuffer().get(indexA).getPosition()+"1");
-                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).getPosition()+"2");
-                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).mul(scene.getView().getViewMatrix()).getPosition()+"3");
-                        System.out.println(solid.getVertexBuffer().get(indexA).mul(solid.getModel()).mul(scene.getView().getViewMatrix()).mul(scene.getProjection()).getPosition()+"3");
-                        System.out.println(a.getPosition()+"4a");
-                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition()+"1");
-                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition().mul(solid.getModel())+"2");
-                        System.out.println(solid.getVertexBuffer().get(indexB).getPosition().mul(solid.getModel()).mul(scene.getView().getViewMatrix())+"3");
-
-                        System.out.println(b.getPosition()+"4b");
-                        System.out.println(c.getPosition());
-                        // TODO: transformace MVP
-                        System.out.println(inView(a));
-                        System.out.println(inView(b));
-                        System.out.println(inView(c));
-                        //if (inView(a)&&inView(b)&&inView(c)) {
-                        double zMin = 0;
+                            double zMin = 0;
 
                         Vertex temp;
                         if (a.getZ() < b.getZ()) {
@@ -139,6 +123,7 @@ public class RendererSolid {
         }
     }
     public void renderTriangle(Vertex a, Vertex b, Vertex c, Shader shader) {
+        if (inView(a)||inView(b)||inView(c)) {
         a = a.dehomog(a);
         b = b.dehomog(b);
         c = c.dehomog(c);
@@ -149,6 +134,7 @@ public class RendererSolid {
 
         // Rasterizace
         triangleRasterizer.rasterize(a, b, c, new ShaderConstant());
+        }
     }
     public Vertex transformujDoOkna(Vertex v){
         v.setPosition(new Point3D(new Vec3D(v.getPosition()).mul(new Vec3D(1,-1,1))));

@@ -11,8 +11,6 @@ public class DepthBuffer implements Raster<Double>{
     private final int width;
     private final int height;
 
-    
-    
     public DepthBuffer(int width, int height) {
         this.width = width;
         this.height = height;
@@ -27,13 +25,12 @@ public class DepthBuffer implements Raster<Double>{
         for (double[] ds : buffer) {
             Arrays.fill(ds, 10000.0);
         }
-        
     }
 
     @Override
     public int getHeight() {
         // TODO Auto-generated method stub
-        return 0;
+        return height;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class DepthBuffer implements Raster<Double>{
     @Override
     public int getWidth() {
         // TODO Auto-generated method stub
-        return 0;
+        return width;
     }
 
     @Override
@@ -54,7 +51,5 @@ public class DepthBuffer implements Raster<Double>{
         if (getValue(x, y).orElse(1.0)>value) {
             buffer[x][y] = value;
         }
-        
     }
-
 }
