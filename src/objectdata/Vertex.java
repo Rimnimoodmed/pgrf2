@@ -5,9 +5,10 @@ import transforms.Col;
 import transforms.Mat4;
 import transforms.Point3D;
 import transforms.Vec2D;
+import transforms.Vec3D;
 
 public class Vertex implements Vectorizable<Vertex>{
-    private final Point3D position;
+    private Point3D position;
     private final Col color;
     private final Vec2D uv;
     //todo normal uv one
@@ -45,7 +46,17 @@ public class Vertex implements Vectorizable<Vertex>{
     public Vec2D getUv() {
         return uv;
     }
+
     public Vertex mul(Mat4 mat) {
         return new Vertex(this.position.mul(mat), this.color,this.uv);
+    }
+
+    public Vertex dehomog(Vertex v){
+        v.position = new Point3D(v.position.dehomog().orElse(new Vec3D()));
+        return v;
+    }
+
+    public void setPosition(Point3D position) {
+        this.position = position;
     }
 }

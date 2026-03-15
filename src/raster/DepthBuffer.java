@@ -18,13 +18,15 @@ public class DepthBuffer implements Raster<Double>{
         this.height = height;
         this.buffer = new double[width][height];
         for (double[] ds : buffer) {
-            Arrays.fill(ds, 1.0);
+            Arrays.fill(ds, 10000.0);
         }
     }
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
+        for (double[] ds : buffer) {
+            Arrays.fill(ds, 10000.0);
+        }
         
     }
 

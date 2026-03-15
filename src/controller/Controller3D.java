@@ -1,5 +1,9 @@
 package controller;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -7,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import model.Scene;
 import objectdata.Arrow;
+import objectdata.Icosahedron;
 import objectdata.Solid;
 import objectdata.Vertex;
 import raster.ZBuffer;
@@ -15,6 +20,8 @@ import rasterize.LineRasterizerGraphics;
 import rasterize.TriangleRasterizer;
 import renderer.RendererSolid;
 import shader.Shader;
+import shader.ShaderConstant;
+import shader.shaderInterpolated;
 import transforms.*;
 import view.Panel;
 
@@ -32,6 +39,8 @@ public class Controller3D {
 
     private Solid Arrow;
     private Solid Quad;
+    private Solid Icosahedron;
+    private double pohyb = 0.1;
 
 
     public Controller3D(Panel panel) {
@@ -39,7 +48,7 @@ public class Controller3D {
         this.zBuffer = new ZBuffer(panel.getRaster());
         lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
         triangleRasterizer = new TriangleRasterizer(zBuffer);
-        renderer = new RendererSolid(lineRasterizer, triangleRasterizer);
+        renderer = new RendererSolid(lineRasterizer, triangleRasterizer, panel);
         scene = new Scene(panel);
         
         try {
@@ -49,14 +58,134 @@ public class Controller3D {
         }
         Arrow = new Arrow();
         Quad = new objectdata.Quad();
+        Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
+        Quad.setModel(Quad.getModel().mul(new Mat4Transl(1,0,0)));
+        Quad.setModel(Quad.getModel().mul(new Mat4Scale(100)));
+        Icosahedron = new Icosahedron();
 
-        initListeners();
+        initListenery(panel);
 
         drawScene();
     }
 
-    private void initListeners() {
-        // TODO: Inicializace listenerů např. pohyb kamerou
+        public void initListenery(Panel panel){
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                /*if (e.getKeyCode() == KeyEvent.VK_R) {
+                    if (ortho) {
+                        ortho=false;
+                        System.out.println("neorthuju");
+                        projection = projectionOrtho;
+                    }
+                    else{
+                        ortho= true;
+                        System.out.println("orthuju");
+                        projection = projectionPersp;
+                    }
+                }*/
+                if (e.getKeyCode() == KeyEvent.VK_W) {
+                    scene.setView(scene.getView().forward(pohyb));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_A) {
+                    scene.setView(scene.getView().left(pohyb));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_S) {
+                    scene.setView(scene.getView().backward(pohyb));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    scene.setView(scene.getView().right(pohyb));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    scene.setView(scene.getView().addAzimuth(pohyb));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_E) {
+                    scene.setView(scene.getView().addAzimuth(-pohyb));
+                }
+                /*if (e.getKeyCode() == KeyEvent.VK_I) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(0.1,0,0)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_J) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(0,0.1,0)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_K) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(-0.1,0,0)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_L) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(0,-0.1,0)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_U) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(0,0,0.1)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_O) {
+                    selected.setModel(selected.getModel().mul(new Mat4Transl(0,0,-0.1)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    selected.setModel(selected.getModel().mul(new Mat4RotY(0.3)));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Y) {
+                    selected.setModel(new Mat4Scale(1.1).mul(selected.getModel()));
+                }
+                if (e.getKeyCode() == KeyEvent.VK_H) {
+                    selected.setModel(new Mat4Scale(0.9).mul(selected.getModel()));
+                }*/
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    scene.setView(scene.getView().up(pohyb));
+                }
+                if (e.getKeyCode() == 17) {
+                    scene.setView(scene.getView().down(pohyb));
+                }
+                /*if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    meshPointer--;
+                    for (Mesh mesh : meshes) {
+                        mesh.setSelected(false);
+                    }
+                    if (meshPointer < 0) {
+                        meshPointer = meshes.size()-1;
+                    }
+                    selected = meshes.get(meshPointer);
+                    selected.setSelected(true);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    meshPointer++;
+                    for (Mesh mesh : meshes) {
+                        mesh.setSelected(false);
+                    }
+                    
+                    if (meshPointer > meshes.size()-1) {
+                        meshPointer = 0;
+                    }
+                    selected = meshes.get(meshPointer);
+                    selected.setSelected(true);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_G) {
+                    if (selected.isVisible()) {
+                        selected.setVisible(false);
+                    }
+                    else{
+                        selected.setVisible(true);
+                    }
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    selected.setSelected(false);
+                    selected.setVisible(false);
+                    meshes.remove(meshPointer);
+                }*/
+                drawScene();
+                System.out.println(scene.getView().getPosition());
+            }
+        });
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e){
+                double x = ((double)e.getX()-(panel.getWidth()/2))/(panel.getWidth()/2)*Math.PI;
+                double y = ((double)e.getY()-(panel.getHeight()/2))/(panel.getHeight()/2)*Math.PI;
+                scene.setView(scene.getView().withAzimuth((double)x));
+                scene.setView(scene.getView().withAzimuth((double)y));
+                drawScene();
+                System.out.println(scene.getView().getAzimuth());
+            }
+        });
     }
     public void initObjects() {
 
@@ -84,17 +213,22 @@ public class Controller3D {
     private void drawScene() {
         panel.getRaster().clear();
 
-        zBuffer.setPixelWithZTest(50, 50, 0.1, new Col(0x00ff00));
-        zBuffer.setPixelWithZTest(50, 50, 0.4, new Col(0xff00ff));
+        /*zBuffer.setPixelWithZTest(50, 50, 0.1, new Col(0x00ff00));
+        zBuffer.setPixelWithZTest(50, 50, 0.4, new Col(0xff00ff));*/
         
-        Vertex a = new Vertex(new Point3D(400, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
-        Vertex b = new Vertex(new Point3D(0, 300, 1) , new Col(0.,1,0), new Vec2D(0,0));
-        Vertex c = new Vertex(new Point3D(599, 599, 1), new Col(1.,0,0), new Vec2D(1,1));
+        Vertex a = new Vertex(new Point3D(1, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
+        Vertex b = new Vertex(new Point3D(0, 1, 1) , new Col(0.,1,0), new Vec2D(0,0));
+        Vertex c = new Vertex(new Point3D(1, 1, 1), new Col(1.,0,0), new Vec2D(1,1));
         
-        //triangleRasterizer.rasterize(a, b, c, coShader);
+        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());
         
-        //renderer.render(Arrow);
+        //renderer.render(Arrow, scene);
+        System.out.println("pozice");
+        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel())).add(scene.getView().getPosition().opposite()));
+        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix()))));
+        System.out.println(new Vec3D(Quad.getVertexBuffer().getFirst().getPosition().mul(Quad.getModel().mul(scene.getView().getViewMatrix().mul(scene.getProjection())))));
         renderer.render(Quad, scene);
+        //renderer.render(Icosahedron, scene);
 
         /*Vertex d = new Vertex(new Point3D(200, 0, 0), new Col(0.,1,0));
         Vertex e = new Vertex(new Point3D(0, 100, 0) , new Col(0.,1.,0));
@@ -102,5 +236,7 @@ public class Controller3D {
         triangleRasterizer.rasterize(d, e, f, new shaderConstant());*/
 
         panel.repaint();
+        zBuffer.clear();
+        
     }
 }

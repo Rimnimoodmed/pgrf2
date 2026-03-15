@@ -7,16 +7,22 @@ import objectdata.Vertex;
 import rasterize.LineRasterizer;
 import rasterize.TriangleRasterizer;
 import shader.Shader;
+import shader.ShaderConstant;
 import transforms.Mat4;
+import transforms.Point3D;
+import transforms.Vec3D;
 import util.Lerp;
+import view.Panel;
 
 public class RendererSolid {
     private LineRasterizer lineRasterizer;
     private TriangleRasterizer triangleRasterizer;
+    private view.Panel panel;
 
-    public RendererSolid(LineRasterizer lineRasterizer, TriangleRasterizer triangleRasterizer) {
+    public RendererSolid(LineRasterizer lineRasterizer, TriangleRasterizer triangleRasterizer, Panel panel) {
         this.lineRasterizer = lineRasterizer;
         this.triangleRasterizer = triangleRasterizer;
+        this.panel = panel;
     }
     
     public void render(Solid solid, Scene scene) {
@@ -82,10 +88,12 @@ public class RendererSolid {
 
                         Lerp<Vertex> lerp = new Lerp<>();
 
-                        if (a.getZ() < zMin)
+                        if (a.getZ() < zMin){
+                            System.out.println("a out of bounds");
                             continue;
-
-                        if (b.getZ() < zMin) {
+                        }
+                        else if (b.getZ() < zMin) {
+                            System.out.println("b out of bounds");
                             double tAB = (a.getZ() - zMin)/(a.getZ()-b.getZ());
                             Vertex vAB = lerp.lerp(a,b,tAB);
                             double tAC = (a.getZ() - zMin)/(a.getZ()-c.getZ());
@@ -94,10 +102,8 @@ public class RendererSolid {
                             continue;
                         }
 
-                        // TODO: dehomogenizace
-
-                        // TODO: transformace do okna
-                        if (c.getZ() < zMin) {
+                        else if (c.getZ() < zMin) {
+                            System.out.println("c out of bounds");
                             double tBC = (b.getZ() - zMin)/(b.getZ()-c.getZ());
                             Vertex vBC = lerp.lerp(b,c,tBC);
                             renderTriangle(a, b, vBC,solid.getShader());
@@ -107,6 +113,8 @@ public class RendererSolid {
                             continue;
                         }
 
+
+                        
                         // Rasterizace
                         renderTriangle(a, b, c, solid.getShader());
                     }
@@ -115,13 +123,23 @@ public class RendererSolid {
             }
         }
     }
-        public void renderTriangle(Vertex a, Vertex b, Vertex c, Shader shader) {
-        // TODO: dehomogenizace
+    public void renderTriangle(Vertex a, Vertex b, Vertex c, Shader shader) {
+        a = a.dehomog(a);
+        b = b.dehomog(b);
+        c = c.dehomog(c);
 
-        // TODO: transformace do okna
+        transformujDoOkna(a);
+        transformujDoOkna(b);
+        transformujDoOkna(c);
 
         // Rasterizace
-        triangleRasterizer.rasterize(a, b, c, shader);
+        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());
+    }
+    public Vertex transformujDoOkna(Vertex v){
+        v.setPosition(new Point3D(new Vec3D(v.getPosition()).mul(new Vec3D(1,-1,1))));
+        v.setPosition(new Point3D(new Vec3D(v.getPosition()).add(new Vec3D(1,1,0))));
+        v.setPosition(new Point3D(new Vec3D(v.getPosition()).mul(new Vec3D((double) (panel.getWidth() - 1) /2, (double) (panel.getHeight() - 1) /2,1))));
+        return v;
     }
 
 }

@@ -15,10 +15,18 @@ public class ZBuffer {
 
 
     public void setPixelWithZTest(int x, int y, double z, Col color){
-        if ((depthBuffer.getValue(x, y).orElse(1.0))>z) {
+        if (x<0 || y<0 || z<0 || x>colorBuffer.getWidth() || y>colorBuffer.getHeight()) {
+            return;
+        }
+        else if ((depthBuffer.getValue(x, y).orElse(1.0))>z) {
             depthBuffer.setValue(x, y, z);
             colorBuffer.setValue(x, y, color);
             
         }
+    }
+
+    public void clear(){
+        depthBuffer.clear();
+        colorBuffer.clear();
     }
 }
