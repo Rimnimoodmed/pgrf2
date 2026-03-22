@@ -7,8 +7,7 @@ public class ShaderInterpolated implements Shader{
 
     @Override
     public Col shade(Vertex pixel) {
-        // TODO Auto-generated method stub
-        return null;
+        return pixel.getColor();
     }
     
 }

@@ -3,6 +3,7 @@ package objectdata;
 import transforms.Col;
 import transforms.Point3D;
 import transforms.Vec2D;
+import transforms.Vec3D;
 
 public class Cube extends Solid{
     Vertex a = new Vertex(new Point3D(-1, -1, -1), new Col(1.,0,0), new Vec2D(1,1)); //0 red

@@ -37,7 +37,7 @@ public class TriangleRasterizer {
         int bY = (int)Math.round(b.getY());
         int cY = (int)Math.round(c.getY());
 
-        for(int y = aY; y <=bY; y++){
+        for(int y = Integer.max((int) aY, 0); y < Integer.min((int)bY,img.getDepthBuffer().getHeight()); y++){
             double tAB = (double)(y-aY)/(bY-aY);
             Vertex ab = lerp.lerp(a, b, tAB);
 
@@ -45,18 +45,18 @@ public class TriangleRasterizer {
             Vertex ac = lerp.lerp(a, c, tAC);
 
             if (ab.getX() > ac.getX()) {
-                Vertex tempx = ab;
+                Vertex tempx = ab; 
                 ab = ac;
                 ac = tempx;
             }
             
-            for (int x = (int) Math.round(ab.getX()); x <= (int) Math.round(ac.getX()); x++) {
+            for (int x = Integer.max((int) ab.getX(), 0); x< Integer.min((int)ac.getX(), img.getDepthBuffer().getWidth()); x++) {
                 double t = (x - ab.getX()) / (ac.getX() - ab.getX());
                 Vertex pixel = lerp.lerp(ab, ac, t);
                 img.setPixelWithZTest(x, y, pixel.getZ(), shader.shade(pixel));
             }
         }
-       for(int y = bY; y <=cY; y++){
+        for(int y = Integer.max((int) bY, 0); y < Integer.min((int)cY,img.getDepthBuffer().getHeight()); y++){
             double tBC = (double)(y-bY)/(cY-bY);
             Vertex bc = lerp.lerp(b, c, tBC);
 
@@ -68,8 +68,7 @@ public class TriangleRasterizer {
                 bc = ac;
                 ac = tempx;
             }
-
-            for (int x = (int) Math.round(bc.getX()); x <= (int) Math.round(ac.getX()); x++) {
+            for (int x = Integer.max((int) bc.getX(), 0); x< Integer.min((int)ac.getX(), img.getDepthBuffer().getWidth()); x++) {
                 double t = (x - bc.getX()) / (ac.getX() - bc.getX());
                 Vertex pixel = lerp.lerp(bc, ac, t);
                 img.setPixelWithZTest(x, y, pixel.getZ(), shader.shade(pixel));

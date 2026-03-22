@@ -32,4 +32,16 @@ public class ZBuffer {
         depthBuffer.clear();
         colorBuffer.clear();
     }
+
+
+    public Raster<Col> getColorBuffer() {
+        return colorBuffer;
+    }
+
+
+    public Raster<Double> getDepthBuffer() {
+        return depthBuffer;
+    }
+
+    
 }

@@ -15,6 +15,7 @@ import objectdata.Arrow;
 import objectdata.Cube;
 import objectdata.Icosahedron;
 import objectdata.Solid;
+import objectdata.Sphere;
 import objectdata.Vertex;
 import raster.ZBuffer;
 import rasterize.LineRasterizer;
@@ -41,9 +42,12 @@ public class Controller3D {
     private Shader constShader;
 
     private Solid selected;
-    private Solid arrow;
+    private Solid osaX;
+    private Solid osaY;
+    private Solid osaZ;
     private Solid quad;
     private Solid cube;
+    private Solid sphere;
     private double pohyb = 0.1;
 
     private ArrayList<Solid> solids = new ArrayList<>();
@@ -57,7 +61,6 @@ public class Controller3D {
         triangleRasterizer = new TriangleRasterizer(zBuffer);
         renderer = new RendererSolid(lineRasterizer, triangleRasterizer, panel);
         scene = new Scene(panel);
-        constShader = new ShaderConstant();
         
         try {
             grayConcrete = ImageIO.read(new File("pgrf2.task1.benes/res/textury/premium_photo-1742642385948-78abcce5656b.jpeg"));
@@ -227,47 +230,43 @@ public class Controller3D {
         }
     };
     public void initObjects() {
-        cube = new Cube();
+        /*cube = new Cube();
         cube.setModel(cube.getModel().mul(new Mat4Transl(5,0,0)));
         cube.setShader(coShader);
-        solids.add(cube);
+        solids.add(cube);*/
         quad = new objectdata.Quad();
         //Quad.setModel(Quad.getModel().mul(new Mat4RotZ(Math.PI/2)));
         quad.setModel(quad.getModel().mul(new Mat4Transl(5,1,0)));
         //Quad.setModel(Quad.getModel().mul(new Mat4Scale(10)));
         quad.setShader(coShader);
         solids.add(quad);
-        arrow = new Arrow();
-        arrow.setShader(constShader);
-        solids.add(arrow);
+        osaX = new Arrow();
+        osaX.setShader(new ShaderConstant(new Col(255,0,0)));
+        solids.add(osaX);
+        osaX.setModel(osaX.getModel().mul(new Mat4Transl(0,0,0)));
+        osaX.setModel(osaX.getModel().mul(new Mat4RotX(Math.toRadians(270))));
+        osaY = new Arrow();
+        osaY.setShader(new ShaderConstant(new Col(0,255,0)));
+        solids.add(osaY);
+        osaY.setModel(osaY.getModel().mul(new Mat4Transl(0,0,0)));
+        osaY.setModel(osaY.getModel().mul(new Mat4RotY(Math.toRadians(270))));
+        osaZ = new Arrow();
+        osaZ.setShader(new ShaderConstant(new Col(0,0,255)));
+        solids.add(osaZ);
+        osaZ.setModel(osaZ.getModel().mul(new Mat4Transl(0,0,0)));
+        osaZ.setModel(osaZ.getModel().mul(new Mat4RotZ(Math.toRadians(270))));
+        cube = new Sphere();
+        cube.setModel(cube.getModel().mul(new Mat4Transl(0,0,0)));
+        cube.setShader(new ShaderConstant(new Col(0,0,255)));
+        solids.add(cube);
         selected = solids.get(solidPointer);
     }
     private void drawScene() {
         zBuffer.clear();
         panel.getRaster().clear();
-
-        /*zBuffer.setPixelWithZTest(50, 50, 0.1, new Col(0x00ff00));
-        zBuffer.setPixelWithZTest(50, 50, 0.4, new Col(0xff00ff));*/
-        
-        /*Vertex a = new Vertex(new Point3D(1, 0, 0), new Col(1.,0,0), new Vec2D(1,0));
-        Vertex b = new Vertex(new Point3D(0, 1, 1) , new Col(0.,1,0), new Vec2D(0,0));
-        Vertex c = new Vertex(new Point3D(1, 1, 1), new Col(1.,0,0), new Vec2D(1,1));
-        
-        triangleRasterizer.rasterize(a, b, c, new ShaderConstant());*/
-        
-        //renderer.render(Arrow, scene);
-        renderer.render(quad, scene);
-        renderer.render(cube, scene);
-        renderer.render(arrow, scene);
-        //renderer.render(Icosahedron, scene);
-
-        /*Vertex d = new Vertex(new Point3D(200, 0, 0), new Col(0.,1,0));
-        Vertex e = new Vertex(new Point3D(0, 100, 0) , new Col(0.,1.,0));
-        Vertex f = new Vertex(new Point3D(599, 500, 1), new Col(0.,1.,0));
-        triangleRasterizer.rasterize(d, e, f, new shaderConstant());*/
-
+        for (Solid solid : solids) {
+            renderer.render(solid, scene);
+        }
         panel.repaint();
-        
-
     }
 }
